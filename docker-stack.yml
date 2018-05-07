@@ -1,0 +1,43 @@
+version: '3'
+
+services:
+  island:
+    image: turzam/ark
+    environment:
+      SESSIONNAME: Ark Docker
+      SERVERMAP: TheIsland
+      SERVERPASSWORD: "" 
+      ADMINPASSWORD: ""
+      BACKUPONSTART: 1
+      UPDATEONSTART: 1
+      AUTOBACKUP: 15
+      TZ: US/Pacific
+      GID: 1000
+      UID: 1000
+    volumes:
+      - /ark/theisland:/ark
+    ports:
+      - '7778:7778/udp'
+      - '27015:27015/udp'
+      - '32330:32330'
+  
+  aberration:
+    image: turzam/ark
+    environment:
+      SESSIONNAME: Ark Docker
+      SERVERMAP: Aberration
+      SERVERPASSWORD: "" 
+      ADMINPASSWORD: ""
+      BACKUPONSTART: 1
+      UPDATEONSTART: 1
+      AUTOBACKUP: 15
+      TZ: US/Pacific
+      GID: 1000
+      UID: 1000
+    volumes:
+      - /ark/aberration:/ark
+    ports:
+      - '7779:7778/udp'
+      - '27016:27015/udp'
+      - '32331:32330'
+ 
