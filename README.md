@@ -5,6 +5,8 @@ Configure and deploy [TuRz4m Ark-docker](https://github.com/TuRz4m/Ark-docker) t
 ## Requirements
 * Docker
   * Preferably, in swarm mode
+* Jenkins
+* Ansible AWX
 
 ### PIP
 * molecule
