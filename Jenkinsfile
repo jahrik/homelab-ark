@@ -18,14 +18,14 @@ node('master') {
             wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
                 ansibleTower(
                     towerServer: 'shredder',
-                    jobTemplate: 'Demo Job Template',
+                    jobTemplate: 'Homelab Ark',
                     importTowerLogs: true,
-                    inventory: 'Demo Inventory',
+                    inventory: 'Home Lab',
                     jobTags: '',
-                    limit: '',
+                    limit: 'shredder',
                     removeColor: false,
                     verbose: true,
-                    credential: '',
+                    credential: 'shredder',
                     extraVars: '''---
                     my_var: "Jenkins Test"'''
                 )
