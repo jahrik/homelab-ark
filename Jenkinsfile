@@ -26,8 +26,7 @@ node('master') {
                     removeColor: false,
                     verbose: true,
                     credential: 'shredder',
-                    extraVars: '''---
-                    my_var: "Jenkins Test"'''
+                    extraVars: ''
                 )
             }
 
