@@ -15,6 +15,22 @@ node('master') {
 
         stage('deploy') {
 
+            wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+                ansibleTower(
+                    towerServer: 'shredder',
+                    jobTemplate: 'Simple Test',
+                    importTowerLogs: true,
+                    inventory: 'Demo Inventory',
+                    jobTags: '',
+                    limit: '',
+                    removeColor: false,
+                    verbose: true,
+                    credential: '',
+                    extraVars: '''---
+                    my_var: "Jenkins Test"'''
+                )
+            }
+
             // If we had ansible installed on the server, setup to run an ansible playbook
             // sh "ansible-playbook -i ./ansible/hosts ./ansible/deploy.yml"
             // ansiblePlaybook(
