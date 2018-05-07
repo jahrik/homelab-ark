@@ -18,7 +18,7 @@ node('master') {
             wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
                 ansibleTower(
                     towerServer: 'shredder',
-                    jobTemplate: 'Simple Test',
+                    jobTemplate: 'Demo Project',
                     importTowerLogs: true,
                     inventory: 'Demo Inventory',
                     jobTags: '',
