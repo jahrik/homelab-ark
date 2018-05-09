@@ -6,7 +6,7 @@ The purpose of this project is to help educate others that want to break into th
 
 The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic setup of ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with themselves!  That should be fun.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
 
-So, from the beginning.  A system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm.
+So, from the beginning.  A system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm. `/data/` is the root directory on the system where docker will store volumes.
 
 **jenkins-stack.yml**
 
@@ -23,10 +23,51 @@ So, from the beginning.  A system to run this on.  I won't go in to too much det
         # environment:
           # JAVA_OPTS: "-Djava.awt.headless=true"
         volumes:
-          - /shredder_pool/jenkins:/var/jenkins_home
+          - /data/jenkins:/var/jenkins_home
 
 This stack is deployed manually, with the following command.
 
     docker stack deploy -c jenkins-stack.yml jenkins
+
+Follow the logs as it builds
+
+    docker service logs -f jenkins_jenkins
+
+Once it's up and running you'll see that it's written files to the `/data/jenkins/` directory.
+
+    ls /data/jenkins/
+
+    config.xml
+    copy_reference_file.log
+    credentials.xml
+    envinject-plugin-configuration.xml
+    fingerprints
+    github-plugin-configuration.xml
+    hudson.model.UpdateCenter.xml
+    ...
+    ...
+
+
+Remember that config.xml file ^ !  You'll need that when you forget your password and lock yourself out of Jenkins.
+
+Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localhost:8080/) if you're on the box running swarm.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
