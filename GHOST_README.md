@@ -28,7 +28,7 @@ So, from the beginning.  A system to run this on.  I won't go in to too much det
 This stack is deployed manually, with the following commands.
 
     sudo mkdir -p /data/jenkins
-    sudo chown -R 1000:1000 /data/awx
+    sudo chown -R 1000:1000 /data/jenkins
     docker stack deploy -c jenkins-stack.yml jenkins
 
 Follow the logs as it builds
@@ -210,7 +210,9 @@ Add that user and password back in Jenkins at `Jenkins > Credentials > System > 
 
 ![jenkins_awx_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_awx_user.png)
 
+Browse to `Jenkins > Manage Jenkins > Ansible Tower` and add the newly built Ansible AWX to Jenkins.  Give it a name, the url to to awx, and use the credentials made in the last step.  Hit test to verify a connection.
 
+![jenkins_awx_add_tower.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_awx_add_tower.png)
 
 
 
