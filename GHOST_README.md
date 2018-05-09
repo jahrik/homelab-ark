@@ -1,4 +1,4 @@
-# Deploying and hosting a public Ark server on the homelab
+# Automating the deployment of a public hosted Ark Survival Evolved Server with Jenkins and Ansible AWX (Part 1 of some)
 
 The purpose of this project is to help educate others that want to break into the world of DevOps or just wanting to bring more automation into their homelab.  Plus, serve as a fun way for me to automate all the things and better myself at documentation and code control.  I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  Ark server configs will be saved to github with included Jenkins pipeline and ansible playbooks needed to test and deploy the Ark server.  When I push a commit to github, Jenkins will see this and pull in the code. When all tests have passed, Jenkins will trigger an ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to docker swarm with a docker-stack.yml file.
 
@@ -25,8 +25,9 @@ So, from the beginning.  A system to run this on.  I won't go in to too much det
         volumes:
           - /data/jenkins:/var/jenkins_home
 
-This stack is deployed manually, with the following command.
+This stack is deployed manually, with the following commands.
 
+    sudo mkdir -p /data/jenkins
     docker stack deploy -c jenkins-stack.yml jenkins
 
 Follow the logs as it builds
@@ -51,8 +52,18 @@ Once it's up and running you'll see that it's written files to the `/data/jenkin
 Remember that config.xml file ^ !  You'll need that when you forget your password and lock yourself out of Jenkins.
 
 Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localhost:8080/) if you're on the box running swarm.
+![jenkins_login.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_login.png)
 
+* Set up a user, password and whatever else and enable security through `jenkins > Manage Jenkins > Configure Global Security > Enable Security`, [http://localhost:8080/configureSecurity/](http://localhost:8080/configureSecurity/)
+* tick `Allow users to sign up`
+  * untick this after you have created an account to disable further accounts being created
+* tick `Logged-in users can do anything`
+* untick `￼Allow anonymous read access`
+* tick `Enable Agent → Master Access Control`
+* Apply and Save
 
+![jenkins_enable_security.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_enable_security.png)
+![jenkins_enable_agent.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_enable_agent.png)
 
 
 
