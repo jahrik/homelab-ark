@@ -197,8 +197,18 @@ And then follow `awx_web` as it preps the database and performs any upgrades usi
 
 It takes a bit for awx to build.  Give it a good 10-20 minutes before you give up on it.
 Browse to http://your_server_ip:80/#/login or [http://localhost/#/login](http://localhost/#/login) if you're on the box and you'll be greeted with the AWX login screen!  Huzzah!
+
+Defaults are `admin` `password`
+
 ![awx_login.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_login.png)
 
+Create a user for jenkins to use through the API
+
+![awx_jenkins_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_jenkins_user.png)
+
+Add that user and password back in Jenkins at `Jenkins > Credentials > System > Global credentials`
+
+![jenkins_awx_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_awx_user.png)
 
 
 
