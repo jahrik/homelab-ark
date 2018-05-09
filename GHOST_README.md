@@ -214,8 +214,19 @@ Browse to `Jenkins > Manage Jenkins > Ansible Tower` and add the newly built Ans
 
 ![jenkins_awx_add_tower.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_awx_add_tower.png)
 
+Back to AWX, there is more to configure.  First of which, are credentials of a user on the Docker Host with passwordless ssh and sudo access.
 
+![ansible_machine_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/ansible_machine_user.png)
 
+Create an inventory containing the Docker Swarm host.  I'm calling mine by hostname, `shredder`.  An IP works just as well.  I'm populating this inventory by pulling it in as a project from GitHub and configuring AWX to use the [inventory.ini](https://github.com/jahrik/home_lab/blob/master/inventory.ini) file.
+
+![awx_inventory.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_inventory.png)
+
+Create a project to pull in the code from github.  This project will pull in [this very repository](https://github.com/jahrik/homelab-ark).
+
+![awx_project.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_project.png)
+
+Once a project is created and we're pulling in code, a template can be constructed that Jenkins will call through the API.
 
 
 
