@@ -4,7 +4,7 @@ The purpose of this project is to help educate others that want to break into th
 
 ![Jenkins to AWX](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_to_awx.png)
 
-The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic setup of ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with themselves!  That should be fun.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
+The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with themselves!  That should be fun.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
 
 So, from the beginning.  A system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm. `/data/` is the root directory on the system where docker will store volumes.
 
@@ -226,12 +226,12 @@ Create a project to pull in the code from github.  This project will pull in [th
 
 ![awx_project.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_project.png)
 
-Once a project is created and we're pulling in code, a template can be constructed that Jenkins will call through the API.
+Once a project is created and we're pulling in code, a template can be constructed that Jenkins will call through the API.  This template uses the inventory created above, the credentials created above, the project being pulled in, docker-ark, and uses a [playbook](https://github.com/jahrik/homelab-ark/blob/master/playbook.yml) in that project to call the [main task](https://github.com/jahrik/homelab-ark/blob/master/ark/tasks/main.yml).
 
+![awx_ark_template.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_ark_template.png)
 
+This playbook is still very basic, and only does some minor directory prep and config file generation, but it's a great start to test results.  Here is what a run looks like through AWX.
 
-
-
-
+![ansible_ark_main_task.png](https://github.com/jahrik/homelab-ark/raw/master/images/ansible_ark_main_task.png)
 
 
