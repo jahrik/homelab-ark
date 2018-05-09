@@ -1,6 +1,8 @@
 # Deploying and hosting a public Ark server on the homelab
 
-In this homelab project, I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  All Ark server configs will be saved to github.  A webhook will trigger a Jenkins pipeline that will build a virtual environment to run tests for linting, syntax, etc.  When all tests have passed, Jenkins will trigger an ansible playbook through AWX (opensource tower), that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to docker swarm with a stack file.
+The purpose of this project is to help educate others that want to break into the world of DevOps and serve as a fun way for me to automate all the things and get better and documentation.  In this homelab project, I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  All Ark server configs will be saved to github.  A webhook will notify Jenkins to pull the code. When all tests have passed, Jenkins will trigger an ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to docker swarm with a docker-stack.yml file.
+
+![Jenkins to AWX](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_to_awx.png)
 
 ## Requirements
 
