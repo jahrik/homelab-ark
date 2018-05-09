@@ -218,7 +218,7 @@ Back to AWX, there is more to configure.  First of which, are credentials of a u
 
 ![ansible_machine_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/ansible_machine_user.png)
 
-Create an inventory containing the Docker Swarm host.  I'm calling mine by hostname, `shredder`.  An IP works just as well.  I'm populating this inventory by pulling it in as a project from GitHub and configuring AWX to use the [inventory.ini](https://github.com/jahrik/home_lab/blob/master/inventory.ini) file.
+Create an inventory containing the Docker Swarm host.  I'm calling mine by hostname, `shredder`.  An IP works just as well.  I'm populating this inventory by pulling it in as a [project from GitHub](https://github.com/jahrik/home_lab) and configuring AWX to use the [inventory.ini](https://github.com/jahrik/home_lab/blob/master/inventory.ini) file.
 
 ![awx_inventory.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_inventory.png)
 
@@ -233,5 +233,25 @@ Once a project is created and we're pulling in code, a template can be construct
 This playbook is still very basic, and only does some minor directory prep and config file generation, but it's a great start to test results.  Here is what a run looks like through AWX.
 
 ![ansible_ark_main_task.png](https://github.com/jahrik/homelab-ark/raw/master/images/ansible_ark_main_task.png)
+
+In order to get Jenkins to fire off this templated playbook, a few plugins need to be installed first.
+* [Ansible Tower Plugin](http://wiki.jenkins-ci.org/display/JENKINS/Ansible+Tower+Plugin)
+* [AnsiColor Plugin](https://wiki.jenkins.io/display/JENKINS/AnsiColor+Plugin)
+
+Browse to `Jenkins > Manage Jenkins > Manage Plugins` and install any plugins needed.
+
+![jenkins_ansible_tower_plugin.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_ansible_tower_plugin.png)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
