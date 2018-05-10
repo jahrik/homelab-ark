@@ -1,6 +1,7 @@
 # Homelab Ark
 
 Configure and deploy [TuRz4m Ark-docker](https://github.com/TuRz4m/Ark-docker) to docker swarm.
+And stuff
 
 ## Requirements
 * Docker
