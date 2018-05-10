@@ -1,4 +1,4 @@
-# Automating the deployment of a publicly hosted Ark Survival Evolved server with Jenkins and Ansible AWX
+# Automating the deployment of a publicly hosted Ark Survival Evolved server with Jenkins and Ansible AWX on Docker Swarm
 
 The purpose of this project is to help educate others that want to break into the world of DevOps or just wanting to bring more automation into their homelab.  Plus, serve as a fun way for me to automate all the things and better myself at documentation and code control.  I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  Ark server configs will be saved to github with included Jenkins pipeline and ansible playbooks needed to test and deploy the Ark server.  When a commit is pushed to github, Jenkins will see this and pull in the code. When all tests have passed, Jenkins will trigger an ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to docker swarm with a docker-stack.yml file.
 
@@ -6,7 +6,7 @@ The purpose of this project is to help educate others that want to break into th
 
 ## Docker
 
-The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with themselves!  That should be fun.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
+The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with a Jenkinsfile and Ansible playbooks.  That should make for some fun problems.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
 
 So, from the beginning, a system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm. `/data/` is the root directory on the system where docker will store volumes.
 
@@ -356,8 +356,11 @@ Verify it's running at [http://localhost:7990/login](http://localhost:7990/login
 
 And with that ladies and gentlemen, a push to github should trigger a build in jenkins which will then hit the API to AWX and deploy a playbook to the Docker Swarm host!  As I'm writing and pushing files up in this project I've been watching the builds go by and it's a lot of fun!  The possibilities seam endless with a pipeline like this.  It will make for a great template for deploying more things to my Docker Swarm Cluster and building out the homelab.
 
-Jenkins builds
+Jenkins Pipeline
 ![jenkins_ark_builds.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_ark_builds.png)
+
+Ansible Playbook
+![awx_ark_jobs.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_ark_jobs.png)
 
 ## Slave
 
