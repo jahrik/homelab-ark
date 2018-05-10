@@ -242,6 +242,65 @@ Browse to `Jenkins > Manage Jenkins > Manage Plugins` and install any plugins ne
 
 ![jenkins_ansible_tower_plugin.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_ansible_tower_plugin.png)
 
+With the plugins installed, they can be called in the Jenkinsfile.  I'm starting with a very basic Pipeline, that will grow in to more as I build on tests, call docker builds, test ansible playbooks with molecule, etc.  During the `deploy` stage, the `ansibleTower` plugin is called and populated with the values that were configured above, when connecting Jenkins to Ansible AWX.  The following variables set, should be all that is needed to get started.  The tower server itself and the Template to point at.
+
+    ansibleTower(
+      towerServer: 'Ansible AWX'
+      jobTemplate: 'ark'
+      ...
+      ...
+    )
+
+**[Jenkinsfile](https://github.com/jahrik/homelab-ark/blob/master/Jenkinsfile)**
+
+    #!/usr/bin/env groovy
+
+    node('master') {
+
+        try {
+
+            stage('build') {
+                // Clean workspace
+                deleteDir()
+                // Checkout the app at the given commit sha from the webhook
+                checkout scm
+            }
+
+            stage('test') {
+                // Run any testing suites
+                sh "echo 'WE ARE TESTING'"
+            }
+
+            stage('deploy') {
+                sh "echo 'WE ARE DEPLOYING'"
+                wrap([$class: 'AnsiColorBuildWrapper', colorMapName: "xterm"]) {
+                    ansibleTower(
+                        towerServer: 'Ansible AWX',
+                        jobTemplate: 'ark',
+                        importTowerLogs: true,
+                        inventory: '',
+                        jobTags: '',
+                        limit: '',
+                        removeColor: false,
+                        verbose: true,
+                        credential: '',
+                        extraVars: ''
+                    )
+                }
+            }
+
+        } catch(error) {
+            throw error
+
+        } finally {
+            // Any cleanup operations needed, whether we hit an error or not
+
+        }
+    }
+
+Be sure to add the jenkins user to the permissions tab on the template itself, or an error will come back, something like 'template does not exist' because the user accessing the AWX API does not have permissions to see that template unless they're an admin.  Give it at least `Execute` capabilities.
+
+![awx_template_permissions.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_template_permissions.png)
 
 
 
@@ -251,7 +310,12 @@ Browse to `Jenkins > Manage Jenkins > Manage Plugins` and install any plugins ne
 
 
 
+## Jenkins Slave
 
+    sudo dd if=ubuntu-18.04-desktop-amd64.iso of=/dev/sdb bs=4M status=progress
+    1522532352 bytes (1.5 GB, 1.4 GiB) copied, 4 s, 380 MB/s
+
+Going with desktop, so Virtualbox will have nothing to complain about, when it comes to trying to test a vm that needs a gui.
 
 
 
