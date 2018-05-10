@@ -1,12 +1,18 @@
-# Automating the deployment of a public hosted Ark Survival Evolved Server with Jenkins and Ansible AWX (Part 1 of some)
+# Automating the deployment of a publicly hosted Ark Survival Evolved server with Jenkins and Ansible AWX
 
 The purpose of this project is to help educate others that want to break into the world of DevOps or just wanting to bring more automation into their homelab.  Plus, serve as a fun way for me to automate all the things and better myself at documentation and code control.  I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  Ark server configs will be saved to github with included Jenkins pipeline and ansible playbooks needed to test and deploy the Ark server.  When a commit is pushed to github, Jenkins will see this and pull in the code. When all tests have passed, Jenkins will trigger an ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to docker swarm with a docker-stack.yml file.
 
 ![Jenkins to AWX](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_to_awx.png)
 
+## Docker
+
 The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running docker in swarm mode.  Jenkins and Ansible AWX are both running in docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with themselves!  That should be fun.  Data persistence is accomplished by mounting docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into ansible playbooks, like this one, as I have time.
 
-So, from the beginning.  A system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm. `/data/` is the root directory on the system where docker will store volumes.
+So, from the beginning, a system to run this on.  I won't go in to too much detail on [installing ubuntu](https://www.ubuntu.com/server), or [setting up docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to docker swarm. `/data/` is the root directory on the system where docker will store volumes.
+
+### Jenkins
+
+Jenkins is being deployed with a pretty standard stack file.  I haven't complicated it too much yet, but I do have plans to add a slave or two also running in docker, like the master.  As part of this project, I will be hooking up an old laptop to the Jenkins master to act as a slave and handle vagrant and virtualbox for spinning up vms as well as docker for container driven tests and docker deployments to swarm. It will also be a manager in the Swarm cluster and have direct access to all `docker stack deploy` commands.  That Slave is not included in this config file, but will be mentioned again later.
 
 **jenkins-stack.yml**
 
@@ -50,7 +56,7 @@ Once it's up and running you'll see that it's written files to the `/data/jenkin
     ...
 
 
-Remember that config.xml file ^ !  You'll need that when you forget your password and lock yourself out of Jenkins.
+**Remember that config.xml file ^ !  You'll need that when you forget your password and lock yourself out of Jenkins.**
 
 Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localhost:8080/) if you're on the box running swarm.
 ![jenkins_login.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_login.png)
@@ -66,7 +72,9 @@ Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localho
 ![jenkins_enable_security.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_enable_security.png)
 ![jenkins_enable_agent.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_enable_agent.png)
 
-Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. You'll want to change the passwords.
+### AWX
+
+Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. **You'll want to change the passwords. These are examples**  Eventually, I will get this streamlined with environment variables in the stack file, that will be populated at build time in either jenkins as it hands it off to AWX, or pulled in to AWX from vault or something.  Not sure yet.
 
 **awx-stack.yml**
 
@@ -202,6 +210,8 @@ Defaults are `admin` `password`
 
 ![awx_login.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_login.png)
 
+### API
+
 Create a user for jenkins to use through the API
 
 ![awx_jenkins_user.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_jenkins_user.png)
@@ -213,6 +223,8 @@ Add that user and password back in Jenkins at `Jenkins > Credentials > System > 
 Browse to `Jenkins > Manage Jenkins > Ansible Tower` and add the newly built Ansible AWX to Jenkins.  Give it a name, the url to to awx, and use the credentials made in the last step.  Hit test to verify a connection.
 
 ![jenkins_awx_add_tower.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_awx_add_tower.png)
+
+## Ansible
 
 Back to AWX, there is more to configure.  First of which, are credentials of a user on the Docker Host with passwordless ssh and sudo access.
 
@@ -233,6 +245,8 @@ Once a project is created and we're pulling in code, a template can be construct
 This playbook is still very basic, and only does some minor directory prep and config file generation, but it's a great start to test results.  Here is what a run looks like through AWX.
 
 ![ansible_ark_main_task.png](https://github.com/jahrik/homelab-ark/raw/master/images/ansible_ark_main_task.png)
+
+## Jenkinsfile
 
 In order to get Jenkins to fire off this templated playbook, a few plugins need to be installed first.
 * [Ansible Tower Plugin](http://wiki.jenkins-ci.org/display/JENKINS/Ansible+Tower+Plugin)
@@ -302,20 +316,53 @@ Be sure to add the jenkins user to the permissions tab on the template itself, o
 
 ![awx_template_permissions.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_template_permissions.png)
 
+## Webhook
 
+Configure a webhook to trigger a build in Jenkins for every `push` to Github.  This is accomplished by browsing to the [docker-ark](https://github.com/jahrik/homelab-ark) `repo > Settings > Integrations and Services > Add Service > Jenkins (GitHub plugin)`.  The url will be the public IP, (ex. http://123.123.123.123:8080/github-webhook/) of your Jenkins Master.
 
+![jenkins_github_plugin.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_github_plugin.png)
 
+Created a NAT rule to forward traffic hitting port 8080 on the Public WAN (123.123.123.123) and redirect it to the docker host private ip (192.168.123.123), so it hits the Jenkins Master at port 8080.
 
+![jenkins_pfsense_nat.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_pfsense_nat.png)
 
+If this is something you'd like to try and keep internal and private to your homelab, you can easily bring up a bitbucket server running in docker swarm, that will give you all the same functionality of github and remain free for up to 5 users.  Here is a stack file to bring up a bitbucket server in docker swarm.  Deploy it and log in with your atlassian account or create a new one.
 
+**bitbucket-stack.yml**
 
+    version: '3'
 
-## Jenkins Slave
+    services:
+
+      bitbucket:
+        image: atlassian/bitbucket-server
+        ports:
+          - '7990:7990'
+          - '7999:7999'
+        volumes:
+          - /data/bitbucket:/var/atlassian/application-data/bitbucket
+
+Deploy the stack with
+
+    sudo mkdir -p /data/bitbucket
+    sudo chown -R daemon:daemon /data/bitbucket
+    docker stack deploy -c bitbucket-stack.yml bb
+
+Verify it's running at [http://localhost:7990/login](http://localhost:7990/login)
+
+![bb_server.png](https://github.com/jahrik/homelab-ark/raw/master/images/bb_server.png)
+
+## Build
+
+And with that ladies and gentlemen, a push to github should trigger a build in jenkins which will then hit the API to AWX and deploy a playbook to the Docker Swarm host!  As I'm writing and pushing files up in this project I've been watching the builds go by and it's a lot of fun!  The possibilities seam endless with a pipeline like this.  It will make for a great template for deploying more things to my Docker Swarm Cluster and building out the homelab.
+
+Jenkins builds
+![jenkins_ark_builds.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_ark_builds.png)
+
+## Slave
+
+Because I'm deploying the Jenkins Master to Docker Swarm, I'm unable to build any sort of virtualisation on the master itself.  I need a separate hardware box to act as a Jenkins slave for this.  I'll just be using an old laptop with a base install of ubuntu 18.04 and a few other packages installed, like ansible, vagrant, virtualbox, to name a few, for running all tests on the playbooks before sending it to production. I'm going with Ubuntu Desktop for when it comes time to test a vm that needs a GUI for something.
 
     sudo dd if=ubuntu-18.04-desktop-amd64.iso of=/dev/sdb bs=4M status=progress
     1522532352 bytes (1.5 GB, 1.4 GiB) copied, 4 s, 380 MB/s
-
-Going with desktop, so Virtualbox will have nothing to complain about, when it comes to trying to test a vm that needs a gui.
-
-
 
