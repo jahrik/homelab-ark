@@ -457,6 +457,8 @@ HAVE FUN!!!
 
 ## Next
 
+Things I plan to do next:
+
 * Because I'm deploying the Jenkins Master to Docker Swarm,
   * I'm unable to build any sort of virtualisation on the master itself.
   * I need a separate hardware box to act as a Jenkins slave for this.
@@ -465,7 +467,6 @@ HAVE FUN!!!
       * Ansible
       * Vagrant
       * Virtualbox
-      * to name a few
     * For running all tests on the playbooks before sending it to production.
     * I'm going with Ubuntu Desktop for when it comes time to test a VM that needs a GUI for something.
   * I'm currently able to run tests in molecule locally in the workstation.
@@ -475,3 +476,16 @@ HAVE FUN!!!
 * I still need to figure out a way to pass the environment variable to the stack on deployment...
   * Set variables in AWX inventory after it's already pulled from Github
   * Set ENV vars in Jenkins and pass them in during the API call to AWX
+
+## Bonus!
+
+Girlfriend was kind enough to take the time today and learn some git commands and help me test the Jenkins Webhook!  She cloned this branch locally and created a [branch](https://github.com/jahrik/homelab-ark/tree/edit/ArkPart1), made edits to this [README](https://github.com/jahrik/homelab-ark/blob/edit/ArkPart1/GHOST_README.md), and created a [pull request](https://github.com/jahrik/homelab-ark/pull/1/files) full of spelling fixes and edits.  When she pushed this branch up to github, it kicked off Jenkins and created a new branch in the dashboard as well.
+
+![jenkins_new_branch.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_new_branch.png)
+
+With that, it ran through the usual basic Pipeline I have configured and also kicked off the Ansible AWX run, which deployed the Ark server to Docker.  Pretty cool!  I will definitely need to put some checks in place to only run tests on branches that are not master, don't deploy to production when a collaborator is only pushing edits to a README, etc...
+
+Another thing I noted, by default:
+* Jenkins put a strike through the branch in the dashboard once the pull request was complete.
+* Jenkins did not build when the PR was merged into master (I really thought it would).
+  * Will need to research that further, I really want it to build on a branch merge.
