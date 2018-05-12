@@ -479,7 +479,7 @@ Things I plan to do next:
 
 ## Bonus!
 
-Girlfriend was kind enough to take the time today and learn some git commands and help me test the Jenkins Webhook!  She cloned this branch locally and created a [branch](https://github.com/jahrik/homelab-ark/tree/edit/ArkPart1), made edits to this [README](https://github.com/jahrik/homelab-ark/blob/edit/ArkPart1/GHOST_README.md), and created a [pull request](https://github.com/jahrik/homelab-ark/pull/1/files) full of spelling fixes and edits.  When she pushed this branch up to github, it kicked off Jenkins and created a new branch in the dashboard as well.
+Girlfriend was kind enough to take the time today and learn some git commands and help me test the Jenkins webhook!  She cloned this branch locally and created a [branch](https://github.com/jahrik/homelab-ark/tree/edit/ArkPart1), made edits to this [README](https://github.com/jahrik/homelab-ark/blob/edit/ArkPart1/GHOST_README.md), and created a [pull request](https://github.com/jahrik/homelab-ark/pull/1/files) full of spelling fixes and edits.  When she pushed this branch up to github, it kicked off Jenkins and created a new branch in the dashboard as well.
 
 ![jenkins_new_branch.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_new_branch.png)
 
