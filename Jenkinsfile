@@ -29,7 +29,8 @@ node('master') {
                     removeColor: false,
                     verbose: true,
                     credential: '',
-                    extraVars: ''
+                    extraVars: '''---
+                      ark_passwd: "password"'''
                 )
             }
         }
