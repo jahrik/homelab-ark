@@ -485,7 +485,6 @@ Girlfriend was kind enough to take the time today and learn some git commands an
 
 With that, it ran through the usual basic Pipeline I have configured and also kicked off the Ansible AWX run, which deployed the Ark server to Docker.  Pretty cool!  I will definitely need to put some checks in place to only run tests on branches that are not master, don't deploy to production when a collaborator is only pushing edits to a README, etc...
 
-Another thing I noted, by default:
-* Jenkins put a strike through the branch in the dashboard once the pull request was complete.
-* Jenkins did not build when the PR was merged into master (I really thought it would).
-  * Will need to research that further, I really want it to build on a branch merge.
+When the pull request was merged Jenkins was triggered again for a build and deploy!
+
+![jenkins_final_build.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_final_build.png)
