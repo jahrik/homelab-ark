@@ -455,11 +455,23 @@ HAVE FUN!!!
 
 ![ark_have_fun.png](https://github.com/jahrik/homelab-ark/raw/master/images/ark_have_fun.png)
 
-## Continue
+## Next
 
-Because I'm deploying the Jenkins Master to Docker Swarm, I'm unable to build any sort of virtualisation on the master itself.  I need a separate hardware box to act as a Jenkins slave for this.  I'll just be using an old laptop with a base install of ubuntu 18.04 and a few other packages installed, like ansible, vagrant, virtualbox, to name a few, for running all tests on the playbooks before sending it to production. I'm going with Ubuntu Desktop for when it comes time to test a vm that needs a GUI for something.
+* Because I'm deploying the Jenkins Master to Docker Swarm,
+  * I'm unable to build any sort of virtualisation on the master itself.
+  * I need a separate hardware box to act as a Jenkins slave for this.
+    * Using an old laptop with a base install of ubuntu 18.04
+    * Few other packages installed.
+      * ansible
+      * vagrant
+      * virtualbox
+      * to name a few
+    * For running all tests on the playbooks before sending it to production.
+    * I'm going with Ubuntu Desktop for when it comes time to test a vm that needs a GUI for something.
+  * I'm currently able to run tests in molecule locally in the workstation.
+    * I want that functionality in jenkins as well.
+    * A slave will be the easiest way to accomplish this.
 
-I'm currently able to run tests in molecule locally in the workstation. I want that functionality in jenkins as well.  A slave will be the easiest way to accomplish this.
-
-I still need to figure out a way to pass the Environment variable to the stack on deployment...
-
+* I still need to figure out a way to pass the Environment variable to the stack on deployment...
+  * Set variables in AWX inventory after it's already pulled from Github
+  * Set ENV vars in jenkins and pass them in during the API call to AWX
