@@ -402,7 +402,7 @@ For a manual deployment, this one works just as easily as AWX and Jenkins did.  
     sudo chown -R 1000:1000 /data/ark
     docker stack deploy -c bitbucket-stack.yml ark
 
-But, I want Jenkins and Ansible to handle this deployment for me.  While putting this all together, [here is the commit](https://github.com/jahrik/homelab-ark/commit/a301afe8d29db6cbb3f786b00c3c6bae9d371b45) that finally make ansible deploy this to the swarm!  Now I'm getting somewhere!
+But, I want Jenkins and Ansible to handle this deployment for me.  While putting this all together, [here is the commit](https://github.com/jahrik/homelab-ark/commit/a301afe8d29db6cbb3f786b00c3c6bae9d371b45) that finally made ansible deploy this to the swarm!  Now I'm getting somewhere!
 
 Here is the Jenkins run from that commit.
 ![jenkins_job_71.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_job_71.png)
@@ -410,10 +410,56 @@ Here is the Jenkins run from that commit.
 And the Ansible job that was kicked off.
 ![awx_job_322.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_job_322.png)
 
-## Slave
+Log into the server and check it out.
+
+`docker ps` to list running docker processes 
+
+    docker ps
+
+    CONTAINER ID        IMAGE                                                 COMMAND                  CREATED             STATUS                PORTS                                                                            NAMES
+    015cc0306a64        turzam/ark:latest                                     "/home/steam/user.sh"    43 minutes ago      Up 43 minutes         7778/tcp, 7778/udp, 27015/tcp, 32330/tcp, 27015/udp                              ark_ark.1.b5ifdto69xfdzw9p0wy800dhu
+
+`docker exec -it container_id bash` to open a shell
+
+    docker exec -it 015cc0306a64 bash
+
+    root@015cc0306a64:/ark#
+
+Verify that Ark is running with `arkmanager` commands
+
+    arkmanager status
+
+    Running command 'status' for instance 'main'
+     Server running:   Yes 
+     Server listening:   Yes 
+    Server Name: Ark Docker - (v279.275)
+    Players: 0 / 70
+     Server online:   No 
+     Server version:   2762965 
+
+Then, sign into Steam and test that the server is accessible.
+
+Navigate to `View > Servers`
+
+![steam_view_servers.png](https://github.com/jahrik/homelab-ark/raw/master/images/steam_view_servers.png)
+
+Next, click on the `Favorites > ADD A SERVER`.  Put in the private IP of the docker swarm host.  Example `192.168.123.123`. Click on `FIND GAMES AT THIS ADDRESS` or specify the port if you know it.  Finally, select the Docker Ark server and click on `ADD SELECETED GAME SERVER TO FAVORITES`
+
+![steam_add_servers.png](https://github.com/jahrik/homelab-ark/raw/master/images/steam_add_servers.png)
+
+Start the game and find the server under the favorites tab.
+
+![ark_favorites.png](https://github.com/jahrik/homelab-ark/raw/master/images/ark_favorites.png)
+
+HAVE FUN!!!
+
+![ark_have_fun.png](https://github.com/jahrik/homelab-ark/raw/master/images/ark_have_fun.png)
+
+## Continue
 
 Because I'm deploying the Jenkins Master to Docker Swarm, I'm unable to build any sort of virtualisation on the master itself.  I need a separate hardware box to act as a Jenkins slave for this.  I'll just be using an old laptop with a base install of ubuntu 18.04 and a few other packages installed, like ansible, vagrant, virtualbox, to name a few, for running all tests on the playbooks before sending it to production. I'm going with Ubuntu Desktop for when it comes time to test a vm that needs a GUI for something.
 
-    sudo dd if=ubuntu-18.04-desktop-amd64.iso of=/dev/sdb bs=4M status=progress
-    1522532352 bytes (1.5 GB, 1.4 GiB) copied, 4 s, 380 MB/s
+I'm currently able to run tests in molecule locally in the workstation. I want that functionality in jenkins as well.  A slave will be the easiest way to accomplish this.
+
+I still need to figure out a way to pass the Environment variable to the stack on deployment...
 
