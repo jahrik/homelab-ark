@@ -23,12 +23,12 @@ node('master') {
                     towerServer: 'shredder',
                     jobTemplate: 'ark',
                     importTowerLogs: true,
-                    inventory: 'homelab',
+                    inventory: '',
                     jobTags: '',
-                    limit: 'shredder',
+                    limit: '',
                     removeColor: false,
                     verbose: true,
-                    credential: 'shredder',
+                    credential: '',
                     extraVars: ''
                 )
             }

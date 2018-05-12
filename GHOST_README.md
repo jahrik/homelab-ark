@@ -74,7 +74,7 @@ Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localho
 
 ### AWX
 
-Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. **You'll want to change the passwords. These are examples**  Eventually, I will get this streamlined with environment variables in the stack file, that will be populated at build time in either jenkins as it hands it off to AWX, or pulled in to AWX from vault or something.  Not sure yet.
+Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. **You'll want to change the passwords. These are examples.**  Eventually, I will get this streamlined with environment variables in the stack file, that will be populated at build time in either jenkins as it hands it off to AWX, or pulled in to AWX from vault or something.  Not sure yet.
 
 **awx-stack.yml**
 
@@ -361,6 +361,49 @@ Jenkins Pipeline
 
 Ansible Playbook
 ![awx_ark_jobs.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_ark_jobs.png)
+
+
+## Ark
+
+Finally, deploying and maintaining the Ark server to docker swarm!  The main reason I like this game, is that is runs natively on Linux when installed through Steam.  It's been a great time waster lately and has been getting me excited about gaming again.  I'm still playing solo on the server I'm hosting, but it is publicly available for others to join.  Long term plans are to get more people playing with me and stress testing the server it runs on.  I'm feeling more comfortable in the back end of the Ark server as far as config files and what not goes.  I've got it backing up every 15 minutes and have the restore from backup down to a science now after multiple catastrophic disasters and losing all my dinos from Alpha Raptor attacks!  Fuckers! Ya, it might be considered cheating... But I'm the only one keeping me accountable right now.  I'd have to take that into consideration if more people start playing on the server and can no longer roll it back as I wish.  Another thing I've been trying to get working is mods, but no luck with that yet.  I have been able to tweak harvest multipliers and taming multipliers though and make the game feel a bit less grindy.  I want to spin up a couple more of the expansions as docker services running along side the Island server currently being hosted.
+
+To deploy Ark to docker swarm, I started with the [TuRz4m Ark Docker](https://github.com/TuRz4m/Ark-docker) repo, and upgraded their [docker-compose.yml](https://github.com/TuRz4m/Ark-docker/blob/master/docker-compose.yml) file to docker compose v3 and renamed it [docker-stack.yml](https://github.com/jahrik/homelab-ark/blob/master/docker-stack.yml) file.
+
+You can see there are some subtle differences, like the formatting of the Environment variables.
+
+    sdiff docker-compose.yml docker-stack.yml
+
+    ark:                            | version: '3'
+      container_name: ark           |
+      image: turzam/ark             | services:
+      environment:                  |   island:
+        - SESSIONNAME=Ark Docker    |     image: turzam/ark
+        - SERVERMAP=TheIsland       |     environment:
+        - SERVERPASSWORD=""         |       SESSIONNAME: Ark Docker
+        - ADMINPASSWORD=""          |       SERVERMAP: TheIsland
+        - BACKUPONSTART=1           |       SERVERPASSWORD: ""
+        - UPDATEONSTART=1           |       ADMINPASSWORD: ""
+        - TZ=Europe/Paris           |       BACKUPONSTART: 1
+        - GID=1000                  |       UPDATEONSTART: 1
+        - UID=1000                  |       AUTOBACKUP: 15
+      volumes:                      |       TZ: US/Pacific
+        - /data/ark:/ark            |       GID: 1000
+      ports:                        |       UID: 1000
+       - 7778:7778/udp              |     volumes:
+       - 7778:7778                  |       - /data/ark:/ark
+       - 27015:27015/udp            |     ports:
+       - 27015:27015                |       - '7778:7778/udp'
+       - 32330:32330                |       - '27015:27015/udp'
+                                    >       - '32330:32330'
+
+For a manual deployment, this one works just as easily as AWX and Jenkins did.  It can be deployed with the following.
+
+    sudo mkdir -p /data/ark
+    sudo chown -R 1000:1000 /data/ark
+    docker stack deploy -c bitbucket-stack.yml ark
+
+But, I want Jenkins and Ansible to handle this deployment for me.
+
 
 ## Slave
 
