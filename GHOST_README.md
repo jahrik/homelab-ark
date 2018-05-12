@@ -1,18 +1,18 @@
 # Automating the deployment of a publicly hosted Ark Survival Evolved server with Jenkins and Ansible AWX on Docker Swarm
 
-The purpose of this project is to educate others that want to break into the world of DevOps or just wanting to bring more automation into their homelab.  Plus, serve as a fun way for me to automate all the things and better myself at documentation and code control.  I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  Ark server configs will be saved to github with included Jenkins pipeline and Ansible playbooks needed to test and deploy the Ark server.  When a commit is pushed to github, Jenkins will see this and pull in the code. When all tests have passed, Jenkins will trigger an Ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to Docker swarm with a docker-stack.yml file.
+The purpose of this project is to educate others that want to break into the world of DevOps or just wanting to bring more automation into their homelab.  Plus, serve as a fun way for me to automate all the things and better myself at documentation and code control.  I will be taking a break from playing Ark long enough to go over my continuous deployment plan and execution.  Ark server configs will be saved to github with included Jenkins pipeline and Ansible playbooks needed to test and deploy the Ark server.  When a commit is pushed to github, Jenkins will see this and pull in the code. When all tests have passed, Jenkins will trigger an Ansible template through an AWX (opensource tower) API call, that will pull in any environment variables and build all directories, config files, and finally deploy the whole thing to Docker Swarm with a docker-stack.yml file.
 
 ![Jenkins to AWX](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_to_awx.png)
 
 ## Docker
 
-The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running Docker in swarm mode.  Jenkins and Ansible AWX are both running in Docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with a Jenkinsfile and Ansible playbooks.  That should make for some fun problems.  Data persistence is accomplished by mounting Docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into Ansible playbooks, [like this one](), as I have time.
+The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running Docker in Swarm mode.  Jenkins and Ansible AWX are both running in Docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with a Jenkinsfile and Ansible playbooks.  That should make for some fun problems.  Data persistence is accomplished by mounting Docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into Ansible playbooks, [like this one](https://github.com/jahrik/homelab-ark/blob/master/playbook.yml), as I have time.
 
-So, from the beginning, a system to run this on.  I won't go in to too much detail on [installing Ubuntu](https://www.ubuntu.com/server), or [setting up Docker swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running Docker swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to Docker swarm. `/data/` is the root directory on the system where Docker will store volumes.
+So, from the beginning, a system to run this on.  I won't go in to too much detail on [installing Ubuntu](https://www.ubuntu.com/server), or [setting up Docker Swarm](https://docs.docker.com/engine/swarm/swarm-tutorial/), as they have already been documented extensively, beyond my abilities.  But once a system is ready and running Docker Swarm, Jenkins and Ansible AWX are ready to be deployed.  They are both handled with a docker-stack.yml file and deployed to Docker Swarm. `/data/` is the root directory on the system where Docker will store volumes.
 
 ### Jenkins
 
-Jenkins is being deployed with a pretty standard stack file.  I haven't complicated it too much yet, but I do have plans to add a slave or two also running in Docker, like the master.  As part of this project, I will be hooking up an old laptop to the Jenkins master to act as a slave and handle vagrant and virtualbox for spinning up vms as well as Docker for container driven tests and Docker deployments to swarm. It will also be a manager in the Swarm cluster and have direct access to all `docker stack deploy` commands.  That Slave is not included in this config file, but will be mentioned again later.
+Jenkins is being deployed with a pretty standard stack file.  I haven't complicated it too much yet, but I do have plans to add a slave or two also running in Docker, like the master.  As part of this project, I will be hooking up an old laptop to the Jenkins master to act as a slave and handle vagrant and virtualbox for spinning up vms as well as Docker for container driven tests and Docker deployments to Swarm. It will also be a manager in the Swarm cluster and have direct access to all `docker stack deploy` commands.  That slave is not included in this config file, but will be mentioned again later.
 
 **jenkins-stack.yml**
 
@@ -58,7 +58,7 @@ Once it's up and running you'll see that it's written files to the `/data/jenkin
 
 **Remember that config.xml file ^ !  You'll need that when you forget your password and lock yourself out of Jenkins.**
 
-Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localhost:8080/) if you're on the box running swarm.
+Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localhost:8080/) if you're on the box running Swarm.
 ![jenkins_login.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_login.png)
 
 * Set up a user, password and whatever else and enable security through `Jenkins > Manage Jenkins > Configure Global Security > Enable Security`, [http://localhost:8080/configureSecurity/](http://localhost:8080/configureSecurity/)
@@ -74,7 +74,7 @@ Browse to http://your_server_ip:8080/ or [http://localhost:8080/](http://localho
 
 ### AWX
 
-Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. **You'll want to change the passwords. These are only examples.**  Eventually, I will get this streamlined with environment variables in the stack file, that will be populated at build time in either Jenkins as it hands it off to AWX, or pulled in to AWX from vault or something similar. 
+Next, bring up the Ansible AWX stack.  It's a bit more complicated than the Jenkins stack and runs multiple containers. **You'll want to change the passwords. These are only examples.**  Eventually, I will get this streamlined with environment variables in the stack file, that will be populated at build time in either Jenkins as it hands it off to AWX, or pulled in to AWX from vault or something similar.
 
 **awx-stack.yml**
 
@@ -326,7 +326,7 @@ Created a NAT rule to forward traffic hitting port 8080 on the Public WAN (123.1
 
 ![jenkins_pfsense_nat.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_pfsense_nat.png)
 
-If this is something you'd like to try and keep internal and private to your homelab, you can easily bring up a Bitbucket server running in Docker swarm, that will give you all the same functionality of Github and remain free for up to 5 users.  Here is a stack file to bring up a Bitbucket server in Docker swarm.  Deploy it and log in with your Atlassian account or create a new one.
+If this is something you'd like to try and keep internal and private to your homelab, you can easily bring up a Bitbucket server running in Docker Swarm, that will give you all the same functionality of Github and remain free for up to 5 users.  Here is a stack file to bring up a Bitbucket server in Docker Swarm.  Deploy it and log in with your Atlassian account or create a new one.
 
 **bitbucket-stack.yml**
 
@@ -365,9 +365,9 @@ Ansible Playbook
 
 ## Ark
 
-Finally, to the point of deploying and maintaining the Ark server on Docker swarm!  The main reason I like this game, is that is runs natively on Linux when installed through Steam.  It's been a great time-waster lately and has me excited about gaming again.  I'm still playing solo on the server I'm hosting, but it is publicly available for others to join.  Long term plans are to get more people playing with me and stress testing the server it runs on.  I'm feeling more comfortable in the back end of the Ark server as far as config files and what not goes.  I've got it backing up every 15 minutes and have the restore from backup down to a science now after multiple catastrophic disasters and losing all my dinos from Alpha Raptor attacks!  Fuckers! Yes, it might be considered cheating... But I'm the only one keeping me accountable right now.  I'd have to take that into consideration if more people start playing on the server and can no longer roll it back as I wish.  Another thing I've been trying to get working is mods, but no luck with that yet.  I have been able to tweak harvest multipliers and taming multipliers though and make the game feel a bit less grindy.  I want to spin up a couple more of the expansions as Docker services running along side the Island server currently being hosted.
+Finally, to the point of deploying and maintaining the Ark server on Docker Swarm!  The main reason I like this game, is that is runs natively on Linux when installed through Steam.  It's been a great time-waster lately and has me excited about gaming again.  I'm still playing solo on the server I'm hosting, but it is publicly available for others to join.  Long term plans are to get more people playing with me and stress testing the server it runs on.  I'm feeling more comfortable in the back end of the Ark server as far as config files and what not go.  I've got it backing up every 15 minutes and have the 'restore from backup' down to a science now after multiple catastrophic disasters and losing all my dinos from Alpha Raptor attacks!  Fuckers! Yes, it might be considered cheating... But I'm the only one keeping me accountable right now.  I'd have to take that into consideration if more people start playing on the server and can no longer roll it back as I wish.  Another thing I've been trying to get working is mods, but no luck with that yet.  I have been able to tweak harvest multipliers and taming multipliers though and make the game feel a bit less grindy.  I want to spin up a couple more of the expansions as Docker services running along side the Island server currently being hosted.
 
-To deploy Ark to Docker swarm, I started with the [TuRz4m Ark Docker](https://github.com/TuRz4m/Ark-docker) repo, and upgraded their [docker-compose.yml](https://github.com/TuRz4m/Ark-docker/blob/master/docker-compose.yml) file to Docker Compose v3 and renamed it [docker-stack.yml](https://github.com/jahrik/homelab-ark/blob/master/docker-stack.yml) file.
+To deploy Ark to Docker Swarm, I started with the [TuRz4m Ark Docker](https://github.com/TuRz4m/Ark-docker) repo, and upgraded their [docker-compose.yml](https://github.com/TuRz4m/Ark-docker/blob/master/docker-compose.yml) file to Docker Compose v3 and renamed it [docker-stack.yml](https://github.com/jahrik/homelab-ark/blob/master/docker-stack.yml) file.
 
 You can see there are some subtle differences, like the formatting of the environment variables.
 
@@ -402,7 +402,7 @@ For a manual deployment, this one works just as easily as AWX and Jenkins did.  
     sudo chown -R 1000:1000 /data/ark
     docker stack deploy -c bitbucket-stack.yml ark
 
-But, I want Jenkins and Ansible to handle this deployment for me.  While putting this all together, [here is the commit](https://github.com/jahrik/homelab-ark/commit/a301afe8d29db6cbb3f786b00c3c6bae9d371b45) that finally made Ansible deploy this to the swarm!  Now I'm getting somewhere!
+But, I want Jenkins and Ansible to handle this deployment for me.  While putting this all together, [here is the commit](https://github.com/jahrik/homelab-ark/commit/a301afe8d29db6cbb3f786b00c3c6bae9d371b45) that finally made Ansible deploy this to the Swarm!  Now I'm getting somewhere!
 
 Here is the Jenkins run from that commit.
 ![jenkins_job_71.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_job_71.png)
@@ -443,7 +443,7 @@ Navigate to `View > Servers`
 
 ![steam_view_servers.png](https://github.com/jahrik/homelab-ark/raw/master/images/steam_view_servers.png)
 
-Next, click on the `Favorites > ADD A SERVER`.  Put in the private IP of the Docker swarm host.  Example `192.168.123.123`. Click on `FIND GAMES AT THIS ADDRESS` or specify the port if you know it.  Finally, select the Docker Ark server and click on `ADD SELECETED GAME SERVER TO FAVORITES`
+Next, click on the `Favorites > ADD A SERVER`.  Put in the private IP of the Docker Swarm host.  Example `192.168.123.123`. Click on `FIND GAMES AT THIS ADDRESS` or specify the port if you know it.  Finally, select the Docker Ark server and click on `ADD SELECETED GAME SERVER TO FAVORITES`
 
 ![steam_add_servers.png](https://github.com/jahrik/homelab-ark/raw/master/images/steam_add_servers.png)
 
