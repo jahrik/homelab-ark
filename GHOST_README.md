@@ -365,7 +365,7 @@ Ansible Playbook
 
 ## Ark
 
-Finally, deploying and maintaining the Ark server to docker swarm!  The main reason I like this game, is that is runs natively on Linux when installed through Steam.  It's been a great time waster lately and has been getting me excited about gaming again.  I'm still playing solo on the server I'm hosting, but it is publicly available for others to join.  Long term plans are to get more people playing with me and stress testing the server it runs on.  I'm feeling more comfortable in the back end of the Ark server as far as config files and what not goes.  I've got it backing up every 15 minutes and have the restore from backup down to a science now after multiple catastrophic disasters and losing all my dinos from Alpha Raptor attacks!  Fuckers! Ya, it might be considered cheating... But I'm the only one keeping me accountable right now.  I'd have to take that into consideration if more people start playing on the server and can no longer roll it back as I wish.  Another thing I've been trying to get working is mods, but no luck with that yet.  I have been able to tweak harvest multipliers and taming multipliers though and make the game feel a bit less grindy.  I want to spin up a couple more of the expansions as docker services running along side the Island server currently being hosted.
+Finally, to the point of deploying and maintaining the Ark server on docker swarm!  The main reason I like this game, is that is runs natively on Linux when installed through Steam.  It's been a great time waster lately and has been getting me excited about gaming again.  I'm still playing solo on the server I'm hosting, but it is publicly available for others to join.  Long term plans are to get more people playing with me and stress testing the server it runs on.  I'm feeling more comfortable in the back end of the Ark server as far as config files and what not goes.  I've got it backing up every 15 minutes and have the restore from backup down to a science now after multiple catastrophic disasters and losing all my dinos from Alpha Raptor attacks!  Fuckers! Ya, it might be considered cheating... But I'm the only one keeping me accountable right now.  I'd have to take that into consideration if more people start playing on the server and can no longer roll it back as I wish.  Another thing I've been trying to get working is mods, but no luck with that yet.  I have been able to tweak harvest multipliers and taming multipliers though and make the game feel a bit less grindy.  I want to spin up a couple more of the expansions as docker services running along side the Island server currently being hosted.
 
 To deploy Ark to docker swarm, I started with the [TuRz4m Ark Docker](https://github.com/TuRz4m/Ark-docker) repo, and upgraded their [docker-compose.yml](https://github.com/TuRz4m/Ark-docker/blob/master/docker-compose.yml) file to docker compose v3 and renamed it [docker-stack.yml](https://github.com/jahrik/homelab-ark/blob/master/docker-stack.yml) file.
 
@@ -402,8 +402,13 @@ For a manual deployment, this one works just as easily as AWX and Jenkins did.  
     sudo chown -R 1000:1000 /data/ark
     docker stack deploy -c bitbucket-stack.yml ark
 
-But, I want Jenkins and Ansible to handle this deployment for me.
+But, I want Jenkins and Ansible to handle this deployment for me.  While putting this all together, [here is the commit](https://github.com/jahrik/homelab-ark/commit/a301afe8d29db6cbb3f786b00c3c6bae9d371b45) that finally make ansible deploy this to the swarm!  Now I'm getting somewhere!
 
+Here is the Jenkins run from that commit.
+![jenkins_job_71.png](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_job_71.png)
+
+And the Ansible job that was kicked off.
+![awx_job_322.png](https://github.com/jahrik/homelab-ark/raw/master/images/awx_job_322.png)
 
 ## Slave
 
