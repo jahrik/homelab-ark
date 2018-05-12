@@ -21,6 +21,9 @@
   tags:
     - ark
 
+# | ln: failed to create symbolic link 'Game.ini': File exists
+# | ln: failed to create symbolic link 'GameUserSettings.ini': File exists
+
 - name: Generate config files
   template:
     src: "{{ item }}.j2"
@@ -28,8 +31,8 @@
     mode: 0644
   with_items:
     - arkmanager.cfg
-    - GameUserSettings.ini
-    - Game.ini
+    # - GameUserSettings.ini
+    # - Game.ini
     - crontab
     - docker-stack.yml
   tags:
@@ -74,3 +77,5 @@
 - debug:
     msg: "Network {{ docker_stack.stdout_lines }}"
 
+# docker service logs ark_ark | sed '/*The server is now running, and should be up within 10 minutes$/ q'
+# docker service logs ark_ark | sed '/*Waiting...$/ q'
