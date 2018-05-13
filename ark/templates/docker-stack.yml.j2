@@ -6,8 +6,8 @@ services:
     environment:
       SESSIONNAME: Ark Docker
       SERVERMAP: TheIsland
-      SERVERPASSWORD: ""
-      ADMINPASSWORD: {{ lookup('env','ADMINPASSWORD') }}
+      SERVERPASSWORD: "${SERVERPASSWORD}"
+      ADMINPASSWORD: "${ADMINPASSWORD}"
       BACKUPONSTART: 1
       UPDATEONSTART: 1
       AUTOBACKUP: 15

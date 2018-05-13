@@ -30,7 +30,7 @@ node('master') {
                     verbose: true,
                     credential: '',
                     extraVars: '''---
-                      ark_passwd: "password"'''
+                      ADMINPASSWORD: "password"'''
                 )
             }
         }
