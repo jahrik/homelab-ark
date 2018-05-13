@@ -451,6 +451,16 @@ Start the game and find the server under the favorites tab.
 
 ![ark_favorites.png](https://github.com/jahrik/homelab-ark/raw/master/images/ark_favorites.png)
 
+To open this up to the world, add a couple of NAT rules to a public facing IP.
+
+Port 7778
+
+![pfsense_ark_wan_7778.png](https://github.com/jahrik/homelab-ark/raw/master/images/pfsense_ark_wan_7778.png)
+
+And Port 27015
+
+![pfsense_ark_wan_27015.png](https://github.com/jahrik/homelab-ark/raw/master/images/pfsense_ark_wan_27015.png)
+
 HAVE FUN!!!
 
 ![ark_have_fun.png](https://github.com/jahrik/homelab-ark/raw/master/images/ark_have_fun.png)
@@ -463,7 +473,7 @@ Things I plan to do next:
   * I'm unable to build any sort of virtualisation on the master itself.
   * I need a separate hardware box to act as a Jenkins slave for this.
     * Using an old laptop with a base install of ubuntu 18.04
-    * Few other packages installed.
+    * Basic packages installed.
       * Ansible
       * Vagrant
       * Virtualbox
@@ -472,10 +482,13 @@ Things I plan to do next:
   * I'm currently able to run tests in molecule locally in the workstation.
     * I want that functionality in Jenkins as well.
     * A slave will be the easiest way to accomplish this.
-
 * I still need to figure out a way to pass the environment variable to the stack on deployment...
   * Set variables in AWX inventory after it's already pulled from Github
   * Set ENV vars in Jenkins and pass them in during the API call to AWX
+* Only deploy master branch, but test other branches
+* Create accessibility between Jenkins and the `arkmanager` command available in the container
+* Generate a WARNING in Ark, when the server is going down for maintenance
+  * Trigger a 15 minute timer and have jenkins sleep for 15 minutes before doing anything
 
 ## Bonus!
 
