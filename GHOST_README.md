@@ -4,6 +4,18 @@ The purpose of this project is to educate others that want to break into the wor
 
 ![Jenkins to AWX](https://github.com/jahrik/homelab-ark/raw/master/images/jenkins_to_awx.png)
 
+* [Docker](#docker)
+   * [Jenkins](#jenkins)
+   * [AWX](#awx)
+   * [API](#api)
+* [Ansible](#ansible)
+* [Jenkinsfile](#jenkinsfile)
+* [Webhook](#webhook)
+* [Build](#build)
+* [Ark](#ark)
+* [Next](#next)
+* [Bonus!](#bonus)
+
 ## Docker
 
 The [host I'm running this on](https://homelab.business/the-2u-mini-itx-zfs-nas-docker-build-part-2-of-2/) is a very basic install of Ubuntu 18.04 running Docker in Swarm mode.  Jenkins and Ansible AWX are both running in Docker and will also soon be deployed in the same manner as I am preparing to deploy the Ark server, with a Jenkinsfile and Ansible playbooks.  That should make for some fun problems.  Data persistence is accomplished by mounting Docker volumes at stack deployment time.  A lot of this server build has been manual, but is slowly being put into Ansible playbooks, [like this one](https://github.com/jahrik/homelab-ark/blob/master/playbook.yml), as I have time.
