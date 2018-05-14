@@ -1,5 +1,8 @@
 ---
 - name: playbook
+  vars:
+    ark_dir:
+      /shredder_pool
   hosts: all
   roles:
     - role: ark
