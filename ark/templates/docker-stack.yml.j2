@@ -2,7 +2,7 @@ version: '3'
 
 services:
 
-  ark:
+  island:
     image: turzam/ark
     environment:
       SESSIONNAME: Homelab TheIsland
@@ -18,14 +18,16 @@ services:
     volumes:
       - {{ ark_dir }}/island:/ark
     ports:
+      - '7778:7778'
       - '7778:7778/udp'
+      - '27015:27015'
       - '27015:27015/udp'
 
   aberration:
     image: turzam/ark
     environment:
       SESSIONNAME: Homelab Aberration
-      SERVERMAP: Aberration
+      SERVERMAP: Aberration_P
       SERVERPASSWORD: "${SERVERPASSWORD}"
       ADMINPASSWORD: "${ADMINPASSWORD}"
       SERVERPORT: 27016
@@ -39,5 +41,7 @@ services:
     volumes:
       - {{ ark_dir }}/aberration:/ark
     ports:
+      - '7779:7779'
       - '7779:7779/udp'
+      - '27016:27016'
       - '27016:27016/udp'
