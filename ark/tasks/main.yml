@@ -1,5 +1,4 @@
 ---
-
 # If built in molecule, user will be 'ubuntu'
 # install docker swarm first
 
@@ -13,34 +12,45 @@
 - name: Create directories for docker volumes
   become: true
   file:
-    path: "{{ ark_dir }}"
+    path: "{{ item }}"
     state: directory
     owner: 1000
     group: 1000
     mode: 0755
-  tags:
-    - ark
+  with_items:
+    - "{{ ark_dir }}/island"
+    - "{{ ark_dir }}/aberration"
+
+- name: Generate docker stack file
+  template:
+    src: "docker-stack.yml.j2"
+    dest: "{{ ark_dir }}/docker-stack.yml"
+    mode: 0644
 
 # | ln: failed to create symbolic link 'Game.ini': File exists
 # | ln: failed to create symbolic link 'GameUserSettings.ini': File exists
 
-- name: Generate config files
+- name: Generate TheIsland config files
   template:
     src: "{{ item }}.j2"
-    dest: "{{ ark_dir }}/{{ item }}"
+    dest: "{{ ark_dir }}/island/{{ item }}"
     mode: 0644
   with_items:
     - arkmanager.cfg
     # - GameUserSettings.ini
     # - Game.ini
     - crontab
-    - docker-stack.yml
-  tags:
-    - ark
 
-- name: lookup ADMINPASSWORD
-  debug:
-    msg: "{{ lookup('env','ADMINPASSWORD') }}"
+- name: Generate Aberration config files
+  template:
+    src: "{{ item }}.j2"
+    dest: "{{ ark_dir }}/aberration/{{ item }}"
+    mode: 0644
+  with_items:
+    # - arkmanager.cfg
+    # - GameUserSettings.ini
+    # - Game.ini
+    - crontab
 
 - name: deploy the ark stack to docker swarm
   become: true
@@ -50,15 +60,15 @@
 
 # Test stuff
 
-- name: Test for server creating log file
-  wait_for:
-    path: "{{ ark_dir }}/log/arkserver.log"
-    state: present
-    timeout: 30
-    msg: Timed out waiting for ark server log file
-
-- debug:
-    msg: "IPs {{ ansible_all_ipv4_addresses }}"
+# - name: Test for server creating log file
+#   wait_for:
+#     path: "{{ ark_dir }}/log/arkserver.log"
+#     state: present
+#     timeout: 30
+#     msg: Timed out waiting for ark server log file
+#
+# - debug:
+#     msg: "IPs {{ ansible_all_ipv4_addresses }}"
 
 # - name: Wait 30 seconds for port 7778
 #   wait_for:
@@ -70,12 +80,11 @@
 
 - name: docker stack ps ark
   become: true
-  shell: >
-    docker stack ps ark
+  shell: docker stack ps ark
   register: docker_stack
 
 - debug:
-    msg: "Network {{ docker_stack.stdout_lines }}"
+    msg: "Stack ps {{ docker_stack.stdout_lines }}"
 
 # docker service logs ark_ark | sed '/*The server is now running, and should be up within 10 minutes$/ q'
 # docker service logs ark_ark | sed '/*Waiting...$/ q'
